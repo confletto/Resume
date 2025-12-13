@@ -56,9 +56,9 @@
           <li><a href="#resume">Resume</a></li>
           <li><a href="#portfolio">Portfolio
             <ol>
-              <li>Game Development</li>
-              <li>ArchiCAD design projects</li>
-              <li>Graphical Design</li>
+              <li>Game Development with Python</li>
+              <li>MATLAB Development Projects</li>
+              <li>Photography & Design</li>
             </ol>
           </a></li>
           <li><a href="#services">Services</a></li>
@@ -89,7 +89,7 @@
               </h1>
 
               <p class="lead mb-4">
-                For viewing my portfolio, please scroll down
+                To view my portfolio, please scroll down
               </p>
 
               <div class="cta-group d-flex flex-wrap align-items-center gap-3" data-aos="zoom-in" data-aos-delay="250">
@@ -133,7 +133,7 @@
         <div class="row align-items-center justify-content-between intro-wrap gy-5">
           <div class="col-lg-7" data-aos="fade-right" data-aos-delay="150">
             <div class="intro-content">
-              <h2 class="headline"></h2>
+              <h2 class="headline">Hi, my name is Kevser Top. I'm studying Artificial Intelligence Systems at VilniusTech university.</h2>
               <p class="lead">
                 I'm an international student studying engineering with a focus on practical, hands-on learning. I enjoy exploring programming and web development, especially when I can build real projects rather than only study theory. I'm interested in improving my skills in Python, electronics, and computer architecture, and I hope to become more confident in creating useful tools, apps, or designs that solve everyday problems. 
               </p>
@@ -297,7 +297,7 @@
                   <p>Creating simulations of circuits and data using VHDL.</p>
                 </div>
               </div>
-            </div><!-- End Portfolio Item -->
+            </div><!-- End Portfolio Iteam -->
 
           </div><!-- End Portfolio Grid -->
 
@@ -307,6 +307,36 @@
 
     </section><!-- /Portfolio Section -->
 
+    <!-- Memory Card Game Section -->
+    <section id="game" class="game section light-background">
+      <div class="game section-title" data-aos="fade-up">
+        <h2>Memory Card Game</h2>
+      </div>
+
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
+        <div class="difficulty">
+          <button class="btn-game">Easy</button>
+          <button class="btn-game">Hard</button>
+        </div>
+
+        <div class="actions">
+          <button class="btn-game" onclick = start()>Start</button>
+          <div class="stats">
+            <div class="moves">Moves: 0</div>
+            <div class="timer">Time: 0</div>
+          </div>
+        </div>
+
+        <div class="grid-container"></div>
+
+        <div class="actions">
+          <button class="btn-game" onclick = restart()>Restart</button>
+        </div>
+      </div>
+
+    </section>
+
+    
     <!-- Services Section -->
     <section id="services" class="services section">
 
@@ -355,6 +385,86 @@
       <div class="container section-title" data-aos="fade-up">
         <h2>Contact</h2>
       </div><!-- End Section Title -->
+
+       <div class="container" data-aos="fade-up" data-aos-delay="100">
+        <div class="row align-items-stretch">
+          <div class="col-lg-7 order-lg-1 order-2" data-aos="fade-right" data-aos-delay="200">
+            <div class="contact-form-container">
+              <div class="form-intro">
+                <h2>Let's Start a Conversation</h2>
+              </div>
+
+              <form class="php-email-form contact-form">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-field">
+                      <label for="userName" class="field-label">Name</label>
+                      <input type="text" name="name" class="form-input" id="userName" placeholder="Your Name" required="">
+                    </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <div class="form-field">
+                      <label for="userSurname" class="field-label">Surname</label>
+                      <input type="text" name="surname" class="form-input" id="userSurname" placeholder="Your Surname" required="">
+                    </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <div class="form-field">
+                      <label for="userEmail" class="field-label">Email</label>
+                      <input type="email" class="form-input" name="email" id="userEmail" placeholder="Your Email" required="">
+                    </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <div class="form-field">
+                      <label for="userPhone" class="field-label">Phone</label>
+                      <input type="tel" class="form-input" name="phone" id="userPhone" placeholder="Your Phone">
+                    </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <div class="form-field">
+                      <label for="userAddress" class="field-label">Address</label>
+                      <input type="text" class="form-input" name="address" id="userAddress" placeholder="Your Address">
+                    </div>
+                  </div>
+                </div>
+                <div class="form-intro">
+                  <h2>Answer to some questions:</h2>
+                </div>
+
+                <div class="form-field message-field">
+                  <label for="labGrade1" class="field-label">What is Your grade for the first LabWork?</label>
+                  <input type="number" class="form-input" name = "labGrade1" id="labGrade1" max="10" min="1" required="">
+                </div>
+
+                <div class="form-field message-field">
+                  <label for="labGrade2" class="field-label">What is Your grade for the second LabWork?</label>
+                  <input type="number" class="form-input" name = "labGrade2" id="labGrade2" max="10" min="1" required="">
+                </div>
+
+                <div class="form-field message-field">
+                  <label for="labGrade3" class="field-label">What is Your grade for the third LabWork?</label>
+                  <input type="number" class="form-input" name = "labGrade3" id="labGrade3" max="10" min="1" required="">
+                </div>
+
+                <div class="my-3">
+                  <div class="loading">Loading</div>
+                  <div class="error-message"></div>
+                  <div class="sent-message">Your message has been sent. Thank you!</div>
+                </div>
+
+                <button type="submit" class="send-button">
+                  Send Message
+                  <span class="button-arrow">→</span>
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <div class="container" data-aos="fade-up" data-aos-delay="100">
         <div class="row align-items-stretch">
