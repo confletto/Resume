@@ -1630,7 +1630,6 @@ section .hero {
 
 .game .actions {
   display: flex;
-  justify-content: center;
   padding: 20px;
 }
 
