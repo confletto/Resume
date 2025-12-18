@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Queue Management System</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1 class="main-title">Service Queue Management</h1>
+            <p class="subtitle">Real-time customer line-up control system</p>
+        </header>
+
+        <!-- Statistics Dashboard -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-content">
+                    <div>
+                        <p class="stat-label">Waiting in Queue</p>
+                        <p class="stat-value stat-blue" id="waitingCount">0</p>
+                    </div>
+                    <svg class="stat-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-content">
+                    <div>
+                        <p class="stat-label">Avg. Wait Time</p>
+                        <p class="stat-value stat-purple" id="avgWaitTime">0 min</p>
+                    </div>
+                    <svg class="stat-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-content">
+                    <div>
+                        <p class="stat-label">Total Served</p>
+                        <p class="stat-value stat-green" id="totalServed">0</p>
+                    </div>
+                    <svg class="stat-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Grid -->
+        <div class="main-grid">
+            <!-- Left Panel - Add Customers -->
+            <div class="panel">
+                <h2 class="panel-title">
+                    <svg class="icon-small" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                    Add to Queue
+                </h2>
+                <div class="service-buttons">
+                    <button class="service-btn service-general" onclick="addToQueue('general')">
+                        <span>General Inquiry</span>
+                        <span class="service-time">~5min</span>
+                    </button>
+                    <button class="service-btn service-technical" onclick="addToQueue('technical')">
+                        <span>Technical Support</span>
+                        <span class="service-time">~15min</span>
+                    </button>
+                    <button class="service-btn service-billing" onclick="addToQueue('billing')">
+                        <span>Billing</span>
+                        <span class="service-time">~10min</span>
+                    </button>
+                    <button class="service-btn service-complaint" onclick="addToQueue('complaint')">
+                        <span>Complaint</span>
+                        <span class="service-time">~20min</span>
+                    </button>
+                </div>
+
+                <div class="control-section">
+                    <button class="control-btn" id="pauseBtn" onclick="togglePause()">
+                        <svg class="icon-small" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        Pause Service
+                    </button>
+                </div>
+            </div>
+
+            <!-- Middle Panel - Current Customer -->
+            <div class="panel">
+                <h2 class="panel-title">Now Serving</h2>
+                
+                <div id="currentCustomer">
+                    <div class="empty-state">
+                        <svg class="empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                        <p class="empty-text">No customer being served</p>
+                        <button class="call-next-btn" onclick="callNext()">Call Next Customer</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel - Queue List -->
+            <div class="panel">
+                <h2 class="panel-title">Waiting Queue (<span id="queueCount">0</span>)</h2>
+                
+                <div class="queue-list" id="queueList">
+                    <div class="empty-state-small">
+                        <svg class="empty-icon-small" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <p>No customers waiting</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent History -->
+        <div class="history-panel">
+            <h2 class="panel-title">Recent History</h2>
+            <div class="table-container">
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>Ticket</th>
+                            <th>Service Type</th>
+                            <th>Status</th>
+                            <th>Wait Time</th>
+                            <th>Completed At</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyTable">
+                        <tr>
+                            <td colspan="5" class="empty-history">No service history yet</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
