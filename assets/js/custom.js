@@ -57,9 +57,18 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
         
-        phoneInput.addEventListener('input', function() {
+        phoneInput.addEventListener('input', function(e) {
             formatPhone(this);
+            checkPhoneField(this);
             updateButton();
+        });
+        
+        // Prevent non-digit characters from being typed
+        phoneInput.addEventListener('keypress', function(e) {
+            const char = String.fromCharCode(e.which);
+            if (!/[0-9]/.test(char)) {
+                e.preventDefault();
+            }
         });
     }
     
@@ -104,32 +113,92 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function formatPhone(input) {
-        let numbers = input.value.replace(/\D/g, '');
+        // Store cursor position
+        const cursorPos = input.selectionStart;
+        const oldValue = input.value;
         
-        if (numbers.startsWith('6')) {
-            numbers = '370' + numbers;
+        // Extract only digits
+        let digits = input.value.replace(/\D/g, '');
+        
+        // Limit to 12 digits (370 + 9 digits)
+        if (digits.length > 12) {
+            digits = digits.substring(0, 12);
         }
         
+        // If starts with 370, keep it; if starts with 6-9, add 370
+        if (digits.startsWith('370')) {
+            digits = digits;
+        } else if (digits.length > 0 && /^[6-9]/.test(digits)) {
+            digits = '370' + digits;
+        } else if (digits.length > 0 && !digits.startsWith('370')) {
+            // If starts with other digits, try to add 370
+            digits = '370' + digits;
+        }
+        
+        // Format the number
         let formatted = '';
-        if (numbers.length > 0) {
-            formatted = '+';
+        if (digits.length > 0) {
+            // Add country code +370
+            formatted = '+370';
             
-            if (numbers.length >= 3) {
-                formatted += numbers.substring(0, 3) + ' ';
-                numbers = numbers.substring(3);
+            if (digits.length > 3) {
+                const restDigits = digits.substring(3);
+                
+                // Format as: +370 6XX XXXXX or +370 XXX XXXXX
+                if (restDigits.length > 0) {
+                    formatted += ' ' + restDigits.substring(0, 3);
+                }
+                if (restDigits.length > 3) {
+                    formatted += ' ' + restDigits.substring(3, 8);
+                }
             }
-            
-            if (numbers.length >= 3) {
-                formatted += numbers.substring(0, 3) + ' ';
-                numbers = numbers.substring(3);
-            }
-            
-            if (numbers.length > 0) {
-                formatted += numbers;
-            }
-            
-            input.value = formatted;
         }
+        
+        input.value = formatted;
+        
+        // Adjust cursor position
+        const lengthDiff = formatted.length - oldValue.length;
+        if (lengthDiff > 0 && cursorPos < formatted.length) {
+            input.setSelectionRange(cursorPos + lengthDiff, cursorPos + lengthDiff);
+        }
+    }
+    
+    function checkPhoneField(input) {
+        const value = input.value.trim();
+        
+        if (value === '' || value === '+370') {
+            showError(input, '');
+            return true; // Phone is optional
+        }
+        
+        // Extract digits only
+        const digits = value.replace(/\D/g, '');
+        
+        // Check if it's a valid Lithuanian number (370 + 8 or 9 digits)
+        if (digits.length < 11) {
+            showError(input, 'Phone number is too short');
+            return false;
+        }
+        
+        if (digits.length > 12) {
+            showError(input, 'Phone number is too long');
+            return false;
+        }
+        
+        if (!digits.startsWith('370')) {
+            showError(input, 'Must be a Lithuanian number (+370)');
+            return false;
+        }
+        
+        // Check if mobile number starts with 6
+        const mobileDigit = digits.charAt(3);
+        if (!/[6-9]/.test(mobileDigit)) {
+            showError(input, 'Invalid Lithuanian phone number');
+            return false;
+        }
+        
+        showError(input, '');
+        return true;
     }
     
     function updateButton() {
@@ -138,6 +207,13 @@ document.addEventListener('DOMContentLoaded', function() {
         
         for (let field of requiredFields) {
             if (!checkOneField(field)) {
+                allValid = false;
+            }
+        }
+        
+        // Check phone only if it has content
+        if (phoneInput.value.trim() !== '' && phoneInput.value.trim() !== '+370') {
+            if (!checkPhoneField(phoneInput)) {
                 allValid = false;
             }
         }
