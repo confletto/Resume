@@ -120,79 +120,54 @@ document.addEventListener('DOMContentLoaded', function() {
         // Extract only digits
         let digits = input.value.replace(/\D/g, '');
         
-        // Limit to 12 digits (370 + 9 digits)
-        if (digits.length > 12) {
-            digits = digits.substring(0, 12);
-        }
-        
-        // If starts with 370, keep it; if starts with 6-9, add 370
+        // Remove 370 prefix if user typed it
         if (digits.startsWith('370')) {
-            digits = digits;
-        } else if (digits.length > 0 && /^[6-9]/.test(digits)) {
-            digits = '370' + digits;
-        } else if (digits.length > 0 && !digits.startsWith('370')) {
-            // If starts with other digits, try to add 370
-            digits = '370' + digits;
+            digits = digits.substring(3);
         }
         
-        // Format the number
-        let formatted = '';
+        // Limit to 9 digits (after +370)
+        if (digits.length > 9) {
+            digits = digits.substring(0, 9);
+        }
+        
+        // Always start with +370
+        let formatted = '+370';
+        
+        // Add the rest of the digits with spacing
         if (digits.length > 0) {
-            // Add country code +370
-            formatted = '+370';
-            
-            if (digits.length > 3) {
-                const restDigits = digits.substring(3);
-                
-                // Format as: +370 6XX XXXXX or +370 XXX XXXXX
-                if (restDigits.length > 0) {
-                    formatted += ' ' + restDigits.substring(0, 3);
-                }
-                if (restDigits.length > 3) {
-                    formatted += ' ' + restDigits.substring(3, 8);
-                }
-            }
+            formatted += ' ' + digits.substring(0, 3);
+        }
+        if (digits.length > 3) {
+            formatted += ' ' + digits.substring(3, 9);
         }
         
         input.value = formatted;
         
-        // Adjust cursor position
-        const lengthDiff = formatted.length - oldValue.length;
-        if (lengthDiff > 0 && cursorPos < formatted.length) {
-            input.setSelectionRange(cursorPos + lengthDiff, cursorPos + lengthDiff);
-        }
+        // Keep cursor at the end for easier typing
+        const newPos = formatted.length;
+        input.setSelectionRange(newPos, newPos);
     }
     
     function checkPhoneField(input) {
         const value = input.value.trim();
         
-        if (value === '' || value === '+370') {
+        // Extract digits only (excluding the 370 prefix)
+        const digits = value.replace(/\D/g, '').substring(3);
+        
+        if (digits.length === 0) {
             showError(input, '');
             return true; // Phone is optional
         }
         
-        // Extract digits only
-        const digits = value.replace(/\D/g, '');
-        
-        // Check if it's a valid Lithuanian number (370 + 8 or 9 digits)
-        if (digits.length < 11) {
-            showError(input, 'Phone number is too short');
-            return false;
-        }
-        
-        if (digits.length > 12) {
-            showError(input, 'Phone number is too long');
-            return false;
-        }
-        
-        if (!digits.startsWith('370')) {
-            showError(input, 'Must be a Lithuanian number (+370)');
+        // Check if it's a valid Lithuanian number (9 digits after 370)
+        if (digits.length < 9) {
+            showError(input, 'Phone number is too short (need 9 digits)');
             return false;
         }
         
         // Check if mobile number starts with 6
-        const mobileDigit = digits.charAt(3);
-        if (!/[6-9]/.test(mobileDigit)) {
+        const firstDigit = digits.charAt(0);
+        if (!/[6-9]/.test(firstDigit)) {
             showError(input, 'Invalid Lithuanian phone number');
             return false;
         }
@@ -211,8 +186,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
-        // Check phone only if it has content
-        if (phoneInput.value.trim() !== '' && phoneInput.value.trim() !== '+370') {
+        // Check phone only if it has content beyond +370
+        const phoneDigits = phoneInput.value.replace(/\D/g, '').substring(3);
+        if (phoneDigits.length > 0) {
             if (!checkPhoneField(phoneInput)) {
                 allValid = false;
             }
