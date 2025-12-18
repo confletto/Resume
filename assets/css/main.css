@@ -1616,21 +1616,21 @@ section .hero {
 .game .container .difficulty {
   display: flex;
   justify-content: center;
-  gap: 8px;
-  padding-bottom: 10px;
+  gap: 20px;
 }
 
 .game .btn-game {
-  padding: 8px 18px;
+  padding: 12px 24px;
   border-radius: 10px;
   background-color: #ffffff;
   border-color: #a7a7a7;
+  font-size: 18px;    /* Text size */
 }
 
 .game .actions {
   display: flex;
   justify-content: center;
-  padding: 10px;
+  padding: 20px;
 }
 
 .game .grid-container {
