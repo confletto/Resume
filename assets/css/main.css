@@ -831,7 +831,7 @@ section .hero {
   padding: 15px 18px;
   border-radius: var(--radius-s);
   color: color-mix(in srgb,var(--default-color), transparent 40%);
-  background: #d2dcb6;
+  background: #B37DD4;
   border: 1px solid color-mix(in srgb, var(--accent-color), transparent 70%);
   transition: 0.2s ease-in-out;
 }
