@@ -59,28 +59,38 @@
   }
 }
 
-/*--------------------------------------------------------------
-# Animated gradient background
---------------------------------------------------------------*/
-
 .hero .movingobj {
-  width: 100px;
-  height: 100px;
-  background: #D6F4ED;
+  width: 80px;
+  height: 80px;
+  background: #87BAC3;
   position: relative;
   border-radius: 50%;
-  animation: mymove 4s infinite;
+  animation: circleFloat 5s ease-in-out infinite;
+  opacity: 0.7;
 }
 
-@keyframes mymove {
-  0%   {top: -50px; left: 1000px; background: #E3E3E3;}
-  25%  {top: -50px; left: 1200px; background: #87BAC3;}
-  50%  {top: 70px; left: 1200px; background: #53629E;}
-  75%  {top: 70px; left: 1000px; background: #473472;}
-  100% {top: -50px; left: 1000px; background: #E3E3E3;}
+@keyframes circleFloat {
+  0% {
+    transform: translate(0, 0) scale(1);
+    background: #87BAC3;
+  }
+  25% {
+    transform: translate(100px, -50px) scale(1.2);
+    background: #53629E;
+  }
+  50% {
+    transform: translate(200px, 0) scale(0.8);
+    background: #473472;
+  }
+  75% {
+    transform: translate(100px, 50px) scale(1.1);
+    background: #D6F4ED;
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+    background: #87BAC3;
+  }
 }
-
-/* assets/css/custom.css - SIMPLE VERSION */
 
 /* Error messages */
 .simple-error {
@@ -126,6 +136,9 @@
 }
 
 /* Color for ratings */
+.red-rating { color: #dc3545; }
+.orange-rating { color: #fd7e14; }
+.green-rating { color: #28a745; }
 .red-rating { color: #dc3545; }
 .orange-rating { color: #fd7e14; }
 .green-rating { color: #28a745; }
