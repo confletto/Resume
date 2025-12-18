@@ -1631,6 +1631,8 @@ section .hero {
 .game .actions {
   display: flex;
   padding: 20px;
+  margin-right: 10px; /* moves it 20px to the left */
+
 }
 
 .game .grid-container {
