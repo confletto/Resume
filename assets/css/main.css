@@ -1631,7 +1631,7 @@ section .hero {
 .game .actions {
   display: flex;
   padding: 20px;
-  margin-right: 10px; /* moves it 20px to the left */
+  margin-right: 40px; /* moves it 40px to the left */
 
 }
 
