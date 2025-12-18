@@ -62,7 +62,7 @@
 .hero .movingobj {
   width: 80px;
   height: 80px;
-  background: #87BAC3;
+  background: #A786BF;
   position: relative;
   border-radius: 50%;
   animation: circleFloat 5s ease-in-out infinite;
