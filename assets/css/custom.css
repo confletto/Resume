@@ -1,310 +1,251 @@
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('Page loaded - form ready!');
+/*--------------------------------------------------------------
+# Button animation
+--------------------------------------------------------------*/
 
-    const contactForm = document.querySelector('.contact-form');
-    if (!contactForm) return;
-    
-    const nameInput = document.getElementById('userName');
-    const surnameInput = document.getElementById('userSurname');
-    const emailInput = document.getElementById('userEmail');
-    const phoneInput = document.getElementById('userPhone');
-    const addressInput = document.getElementById('userAddress');
-    const grade1Input = document.getElementById('labGrade1');
-    const grade2Input = document.getElementById('labGrade2');
-    const grade3Input = document.getElementById('labGrade3');
-    const submitButton = contactForm.querySelector('button[type="submit"]');
-    
-    function showError(input, message) {
-        const oldError = input.parentNode.querySelector('.simple-error');
-        if (oldError) oldError.remove();
-        
-        if (message) {
-            const errorDiv = document.createElement('div');
-            errorDiv.className = 'simple-error';
-            errorDiv.textContent = message;
-            errorDiv.style.cssText = 'color: red; font-size: 12px; margin-top: 5px;';
-            input.parentNode.appendChild(errorDiv);
-            input.style.borderColor = 'red';
-        } else {
-            input.style.borderColor = 'green';
-        }
-    }
-    
-    function isEmpty(value) {
-        return value.trim() === '';
-    }
-    
-    function hasOnlyLetters(value) {
-        return /^[A-Za-z\s\-]+$/.test(value);
-    }
-    
-    function isEmailValid(email) {
-        return email.includes('@') && email.includes('.') && email.length > 5;
-    }
-    
-    function isGradeValid(grade) {
-        const num = parseInt(grade);
-        return !isNaN(num) && num >= 1 && num <= 10;
-    }
-    
-    function setupSimpleValidation() {
-        const allInputs = [nameInput, surnameInput, emailInput, addressInput, grade1Input, grade2Input, grade3Input];
-        
-        allInputs.forEach(input => {
-            input.addEventListener('input', function() {
-                checkOneField(this);
-                updateButton();
-            });
-        });
-        
-        phoneInput.addEventListener('input', function(e) {
-            formatPhone(this);
-            checkPhoneField(this);
-            updateButton();
-        });
-        
-        // Prevent non-digit characters from being typed
-        phoneInput.addEventListener('keypress', function(e) {
-            const char = String.fromCharCode(e.which);
-            if (!/[0-9]/.test(char)) {
-                e.preventDefault();
-            }
-        });
-    }
-    
-    function checkOneField(input) {
-        const value = input.value.trim();
-        
-        if (isEmpty(value)) {
-            showError(input, 'This field is required');
-            return false;
-        }
-        
-        if (input === nameInput || input === surnameInput) {
-            if (!hasOnlyLetters(value)) {
-                showError(input, 'Only letters, spaces and hyphens allowed');
-                return false;
-            }
-        }
-        
-        if (input === emailInput) {
-            if (!isEmailValid(value)) {
-                showError(input, 'Email must contain @ and .');
-                return false;
-            }
-        }
-        
-        if (input === addressInput) {
-            if (value.length < 5) {
-                showError(input, 'Address too short (min 5 chars)');
-                return false;
-            }
-        }
-        
-        if (input === grade1Input || input === grade2Input || input === grade3Input) {
-            if (!isGradeValid(value)) {
-                showError(input, 'Grade must be 1-10');
-                return false;
-            }
-        }
-        
-        showError(input, '');
-        return true;
-    }
-    
-    function formatPhone(input) {
-        // Store cursor position
-        const cursorPos = input.selectionStart;
-        const oldValue = input.value;
-        
-        // Extract only digits
-        let digits = input.value.replace(/\D/g, '');
-        
-        // Remove 370 prefix if user typed it
-        if (digits.startsWith('370')) {
-            digits = digits.substring(3);
-        }
-        
-        // Limit to 9 digits (after +370)
-        if (digits.length > 9) {
-            digits = digits.substring(0, 9);
-        }
-        
-        // Always start with +370
-        let formatted = '+370';
-        
-        // Add the rest of the digits with spacing
-        if (digits.length > 0) {
-            formatted += ' ' + digits.substring(0, 3);
-        }
-        if (digits.length > 3) {
-            formatted += ' ' + digits.substring(3, 9);
-        }
-        
-        input.value = formatted;
-        
-        // Keep cursor at the end for easier typing
-        const newPos = formatted.length;
-        input.setSelectionRange(newPos, newPos);
-    }
-    
-    function checkPhoneField(input) {
-        const value = input.value.trim();
-        
-        // Extract digits only (excluding the 370 prefix)
-        const digits = value.replace(/\D/g, '').substring(3);
-        
-        if (digits.length === 0) {
-            showError(input, '');
-            return true; // Phone is optional
-        }
-        
-        // Check if it's a valid Lithuanian number (9 digits after 370)
-        if (digits.length < 9) {
-            showError(input, 'Phone number is too short (need 9 digits)');
-            return false;
-        }
-        
-        // Check if mobile number starts with 6
-        const firstDigit = digits.charAt(0);
-        if (!/[6-9]/.test(firstDigit)) {
-            showError(input, 'Invalid Lithuanian phone number');
-            return false;
-        }
-        
-        showError(input, '');
-        return true;
-    }
-    
-    function updateButton() {
-        const requiredFields = [nameInput, surnameInput, emailInput, addressInput, grade1Input, grade2Input, grade3Input];
-        let allValid = true;
-        
-        for (let field of requiredFields) {
-            if (!checkOneField(field)) {
-                allValid = false;
-            }
-        }
-        
-        // Check phone only if it has content beyond +370
-        const phoneDigits = phoneInput.value.replace(/\D/g, '').substring(3);
-        if (phoneDigits.length > 0) {
-            if (!checkPhoneField(phoneInput)) {
-                allValid = false;
-            }
-        }
-        
-        if (allValid) {
-            submitButton.disabled = false;
-            submitButton.style.opacity = '1';
-            submitButton.style.cursor = 'pointer';
-        } else {
-            submitButton.disabled = true;
-            submitButton.style.opacity = '0.5';
-            submitButton.style.cursor = 'not-allowed';
-        }
-    }
+.hero .btn-ghost:hover,
+.scroll-top:hover,
+.about .intro-content .cta-group .btn-ghost:hover, 
+.contact .contact-form-container .contact-form .send-button:hover,
+.game .btn-game:hover {
+  animation: movek .5s;
+}
 
-    contactForm.addEventListener('submit', function(event) {
-        event.preventDefault();
-        
-        if (submitButton.disabled) {
-            alert('Please fix all errors before submitting!');
-            return;
-        }
-        
-        console.log('Form submitted!');
-        
-        const formData = {
-            name: nameInput.value.trim(),
-            surname: surnameInput.value.trim(),
-            email: emailInput.value.trim(),
-            phone: phoneInput.value.trim(),
-            address: addressInput.value.trim(),
-            grade1: parseInt(grade1Input.value),
-            grade2: parseInt(grade2Input.value),
-            grade3: parseInt(grade3Input.value)
-        };
-        
-        const average = (formData.grade1 + formData.grade2 + formData.grade3) / 3;
-        formData.average = average.toFixed(1);
-        
-        console.log('Form Data:', formData);
-        
-        showResults(formData);
-        
-        showSuccess();
-        
-        setTimeout(() => {
-            contactForm.reset();
-            updateButton();
-        }, 2000);
-    });
-    
-    function showResults(data) {
-        let resultsDiv = document.getElementById('simple-results');
-        if (!resultsDiv) {
-            resultsDiv = document.createElement('div');
-            resultsDiv.id = 'simple-results';
-            resultsDiv.style.cssText = `
-                margin-top: 20px;
-                padding: 15px;
-                background: #f5f5f5;
-                border-radius: 5px;
-                border: 1px solid #ddd;
-            `;
-            contactForm.parentNode.insertBefore(resultsDiv, contactForm.nextSibling);
-        }
-        
-        let color = 'black';
-        const avg = parseFloat(data.average);
-        if (avg < 4) color = 'red';
-        else if (avg < 7) color = 'orange';
-        else color = 'green';
-        
-        resultsDiv.innerHTML = `
-            <h3>Submitted Data:</h3>
-            <p><b>Name:</b> ${data.name}</p>
-            <p><b>Surname:</b> ${data.surname}</p>
-            <p><b>Email:</b> ${data.email}</p>
-            <p><b>Phone:</b> ${data.phone || 'Not provided'}</p>
-            <p><b>Address:</b> ${data.address}</p>
-            <p><b>Grades:</b> ${data.grade1}, ${data.grade2}, ${data.grade3}</p>
-            <hr>
-            <p><b>Average:</b> 
-                <span style="color: ${color}; font-weight: bold;">
-                    ${data.name} ${data.surname}: ${data.average}
-                </span>
-            </p>
-        `;
-        resultsDiv.style.display = 'block';
-    }
-    
-    function showSuccess() {
-        alert('✅ Form submitted successfully!');
-        
-        const popup = document.createElement('div');
-        popup.textContent = 'Form submitted successfully!';
-        popup.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: purple;
-            color: white;
-            padding: 15px;
-            border-radius: 5px;
-            z-index: 1000;
-        `;
-        document.body.appendChild(popup);
-        
-        setTimeout(() => {
-            popup.remove();
-        }, 3000);
-    }
+@keyframes movek {
+    0% {transform: scale(1)}
+    50% {transform: scale(0.9)}
+    100% {transform: scale(1);}
+}
 
-    setupSimpleValidation();
-    updateButton();
-    
-    console.log('Simple form handler ready!');
+/*--------------------------------------------------------------
+# Loader animation
+--------------------------------------------------------------*/
 
-});
+.loader {
+  font-size: 4px;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  position: absolute;
+  left: 160px;
+  text-indent: -9999em;
+  animation: mulShdSpin 1.1s infinite ease;
+  transform: translateZ(0);
+}
+
+@keyframes mulShdSpin {
+  0%,
+  100% {
+    box-shadow: 0em -2.6em 0em 0em #ffffff, 1.8em -1.8em 0 0em rgba(255,255,255, 0.2), 2.5em 0em 0 0em rgba(255,255,255, 0.2), 1.75em 1.75em 0 0em rgba(255,255,255, 0.2), 0em 2.5em 0 0em rgba(255,255,255, 0.2), -1.8em 1.8em 0 0em rgba(255,255,255, 0.2), -2.6em 0em 0 0em rgba(255,255,255, 0.5), -1.8em -1.8em 0 0em rgba(255,255,255, 0.7);
+  }
+  12.5% {
+    box-shadow: 0em -2.6em 0em 0em rgba(255,255,255, 0.7), 1.8em -1.8em 0 0em #ffffff, 2.5em 0em 0 0em rgba(255,255,255, 0.2), 1.75em 1.75em 0 0em rgba(255,255,255, 0.2), 0em 2.5em 0 0em rgba(255,255,255, 0.2), -1.8em 1.8em 0 0em rgba(255,255,255, 0.2), -2.6em 0em 0 0em rgba(255,255,255, 0.2), -1.8em -1.8em 0 0em rgba(255,255,255, 0.5);
+  }
+  25% {
+    box-shadow: 0em -2.6em 0em 0em rgba(255,255,255, 0.5), 1.8em -1.8em 0 0em rgba(255,255,255, 0.7), 2.5em 0em 0 0em #ffffff, 1.75em 1.75em 0 0em rgba(255,255,255, 0.2), 0em 2.5em 0 0em rgba(255,255,255, 0.2), -1.8em 1.8em 0 0em rgba(255,255,255, 0.2), -2.6em 0em 0 0em rgba(255,255,255, 0.2), -1.8em -1.8em 0 0em rgba(255,255,255, 0.2);
+  }
+  37.5% {
+    box-shadow: 0em -2.6em 0em 0em rgba(255,255,255, 0.2), 1.8em -1.8em 0 0em rgba(255,255,255, 0.5), 2.5em 0em 0 0em rgba(255,255,255, 0.7), 1.75em 1.75em 0 0em #ffffff, 0em 2.5em 0 0em rgba(255,255,255, 0.2), -1.8em 1.8em 0 0em rgba(255,255,255, 0.2), -2.6em 0em 0 0em rgba(255,255,255, 0.2), -1.8em -1.8em 0 0em rgba(255,255,255, 0.2);
+  }
+  50% {
+    box-shadow: 0em -2.6em 0em 0em rgba(255,255,255, 0.2), 1.8em -1.8em 0 0em rgba(255,255,255, 0.2), 2.5em 0em 0 0em rgba(255,255,255, 0.5), 1.75em 1.75em 0 0em rgba(255,255,255, 0.7), 0em 2.5em 0 0em #ffffff, -1.8em 1.8em 0 0em rgba(255,255,255, 0.2), -2.6em 0em 0 0em rgba(255,255,255, 0.2), -1.8em -1.8em 0 0em rgba(255,255,255, 0.2);
+  }
+  62.5% {
+    box-shadow: 0em -2.6em 0em 0em rgba(255,255,255, 0.2), 1.8em -1.8em 0 0em rgba(255,255,255, 0.2), 2.5em 0em 0 0em rgba(255,255,255, 0.2), 1.75em 1.75em 0 0em rgba(255,255,255, 0.5), 0em 2.5em 0 0em rgba(255,255,255, 0.7), -1.8em 1.8em 0 0em #ffffff, -2.6em 0em 0 0em rgba(255,255,255, 0.2), -1.8em -1.8em 0 0em rgba(255,255,255, 0.2);
+  }
+  75% {
+    box-shadow: 0em -2.6em 0em 0em rgba(255,255,255, 0.2), 1.8em -1.8em 0 0em rgba(255,255,255, 0.2), 2.5em 0em 0 0em rgba(255,255,255, 0.2), 1.75em 1.75em 0 0em rgba(255,255,255, 0.2), 0em 2.5em 0 0em rgba(255,255,255, 0.5), -1.8em 1.8em 0 0em rgba(255,255,255, 0.7), -2.6em 0em 0 0em #ffffff, -1.8em -1.8em 0 0em rgba(255,255,255, 0.2);
+  }
+  87.5% {
+    box-shadow: 0em -2.6em 0em 0em rgba(255,255,255, 0.2), 1.8em -1.8em 0 0em rgba(255,255,255, 0.2), 2.5em 0em 0 0em rgba(255,255,255, 0.2), 1.75em 1.75em 0 0em rgba(255,255,255, 0.2), 0em 2.5em 0 0em rgba(255,255,255, 0.2), -1.8em 1.8em 0 0em rgba(255,255,255, 0.5), -2.6em 0em 0 0em rgba(255,255,255, 0.7), -1.8em -1.8em 0 0em #ffffff;
+  }
+}
+
+/*--------------------------------------------------------------
+# Decorative Animated Shape - CENTER
+--------------------------------------------------------------*/
+
+.hero .movingobj {
+  width: 100px;
+  height: 100px;
+  background: #A786BF;
+  position: absolute;
+  left: 50%;
+  margin-left: -50px; /* Half of width to center */
+  bottom: 100px;
+  clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+  animation: pentagonFloat 6s ease-in-out infinite;
+  opacity: 0.8;
+  filter: blur(1px);
+}
+
+/* Pentagon floating animation with rotation */
+@keyframes pentagonFloat {
+  0% {
+    transform: translateY(0) rotate(0deg) scale(1);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    opacity: 0.8;
+  }
+  25% {
+    transform: translateY(-80px) rotate(90deg) scale(1.15);
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    opacity: 0.9;
+  }
+  50% {
+    transform: translateY(-40px) rotate(180deg) scale(0.85);
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    opacity: 0.7;
+  }
+  75% {
+    transform: translateY(-100px) rotate(270deg) scale(1.1);
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    opacity: 0.85;
+  }
+  100% {
+    transform: translateY(0) rotate(360deg) scale(1);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    opacity: 0.8;
+  }
+}
+
+/*--------------------------------------------------------------
+# Advanced Hover Effects
+--------------------------------------------------------------*/
+
+.hero .btn-ghost,
+.about .intro-content .cta-group .btn-ghost,
+.contact .contact-form-container .contact-form .send-button,
+.game .btn-game {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.hero .btn-ghost::before,
+.about .intro-content .cta-group .btn-ghost::before,
+.contact .contact-form-container .contact-form .send-button::before,
+.game .btn-game::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s ease, height 0.6s ease;
+}
+
+.hero .btn-ghost:hover::before,
+.about .intro-content .cta-group .btn-ghost:hover::before,
+.contact .contact-form-container .contact-form .send-button:hover::before,
+.game .btn-game:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+/*--------------------------------------------------------------
+# CSS-only Pulsing Dots Loader
+--------------------------------------------------------------*/
+
+.pulse-loader {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+}
+
+.pulse-loader span {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #667eea;
+  animation: pulseAnimation 1.4s infinite ease-in-out;
+}
+
+.pulse-loader span:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.pulse-loader span:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+@keyframes pulseAnimation {
+  0%, 80%, 100% {
+    transform: scale(0.6);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/*--------------------------------------------------------------
+# Accessibility - Reduced Motion Support
+--------------------------------------------------------------*/
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .hero .movingobj,
+  .loader,
+  .pulse-loader span {
+    animation: none;
+  }
+}
+
+/* Error messages */
+.simple-error {
+    color: red;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+/* Disabled button */
+.send-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Form inputs with errors */
+.form-input {
+    border: 1px solid #ced4da;
+    padding: 10px;
+    border-radius: 4px;
+    width: 100%;
+}
+
+.form-input:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+
+/* Results display */
+#simple-results {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    border: 1px solid #dee2e6;
+}
+
+#simple-results h3 {
+    margin-top: 0;
+    color: #333;
+    border-bottom: 2px solid #4CAF50;
+    padding-bottom: 10px;
+}
+
+/* Color for ratings */
+.red-rating { color: #dc3545; }
+.orange-rating { color: #fd7e14; }
+.green-rating { color: #28a745; }
