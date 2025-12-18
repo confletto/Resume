@@ -70,7 +70,7 @@
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   position: absolute;
   right: 50px; /* Changed from left to right */
-  top: 100px;
+  bottom: 100px; /* Positioned lower on the right side */
   clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
   animation: pentagonFloat 6s ease-in-out infinite;
   opacity: 0.8;
@@ -103,28 +103,6 @@
     transform: translateY(0) rotate(360deg) scale(1);
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     opacity: 0.8;
-  }
-}
-
-/*--------------------------------------------------------------
-# Animated Gradient Background
---------------------------------------------------------------*/
-
-.hero {
-  background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-  background-size: 400% 400%;
-  animation: gradientShift 15s ease infinite;
-}
-
-@keyframes gradientShift {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
   }
 }
 
@@ -220,10 +198,6 @@
   .loader,
   .pulse-loader span {
     animation: none;
-  }
-  
-  .hero {
-    background: #23a6d5;
   }
 }
 
