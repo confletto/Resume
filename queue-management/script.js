@@ -10,25 +10,25 @@ const state = {
 // Service Type Configuration
 const serviceTypes = {
     general: { 
-        name: 'General Inquiry', 
+        name: 'Emergency Cases', 
         color: '#3b82f6', 
         colorClass: 'service-general',
         estimatedTime: 5 
     },
     technical: { 
-        name: 'Technical Support', 
+        name: 'Disability', 
         color: '#a855f7',
         colorClass: 'service-technical',
         estimatedTime: 15 
     },
     billing: { 
-        name: 'Billing', 
+        name: 'Elderly Patients', 
         color: '#22c55e',
         colorClass: 'service-billing',
         estimatedTime: 10 
     },
     complaint: { 
-        name: 'Complaint', 
+        name: 'Regular Check-Up', 
         color: '#ef4444',
         colorClass: 'service-complaint',
         estimatedTime: 20 
