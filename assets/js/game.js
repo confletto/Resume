@@ -83,7 +83,7 @@ function updateBestScoresDisplay() {
                 `;
                 
                 bestScoresContainer.innerHTML = `
-                    <h3 style="margin: 0 0 10px 0; color: #2c3e50; font-size: 18px;">🏆 Best Scores</h3>
+                    <h3 style="margin: 0 0 10px 0; color: #2c3e50; font-size: 18px;">Best Scores</h3>
                     <div class="best-easy" style="margin: 8px 0; padding: 8px; background: white; border-radius: 5px;">
                         <strong>Easy:</strong> <span class="best-easy-value">No record yet</span>
                     </div>
