@@ -14,6 +14,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const grade3Input = document.getElementById('labGrade3');
     const submitButton = contactForm.querySelector('button[type="submit"]');
     
+    // Set initial value to +370
+    if (!phoneInput.value || phoneInput.value.trim() === '') {
+        phoneInput.value = '+370 ';
+    }
+    
     function showError(input, message) {
         const oldError = input.parentNode.querySelector('.simple-error');
         if (oldError) oldError.remove();
@@ -61,6 +66,25 @@ document.addEventListener('DOMContentLoaded', function() {
             formatPhone(this);
             checkPhoneField(this);
             updateButton();
+        });
+        
+        // Prevent phone field from being empty (always keep +370)
+        phoneInput.addEventListener('blur', function() {
+            if (this.value.trim() === '' || this.value.trim() === '+370') {
+                this.value = '+370 ';
+            }
+        });
+        
+        // Prevent deleting the +370 prefix
+        phoneInput.addEventListener('keydown', function(e) {
+            const cursorPos = this.selectionStart;
+            const value = this.value;
+            
+            // Prevent backspace/delete if it would remove +370
+            if ((e.key === 'Backspace' && cursorPos <= 5) || 
+                (e.key === 'Delete' && cursorPos < 5)) {
+                e.preventDefault();
+            }
         });
         
         // Prevent non-digit characters from being typed
@@ -115,7 +139,6 @@ document.addEventListener('DOMContentLoaded', function() {
     function formatPhone(input) {
         // Store cursor position
         const cursorPos = input.selectionStart;
-        const oldValue = input.value;
         
         // Extract only digits
         let digits = input.value.replace(/\D/g, '');
@@ -141,6 +164,11 @@ document.addEventListener('DOMContentLoaded', function() {
             formatted += ' ' + digits.substring(3, 9);
         }
         
+        // Add space after +370 if no digits yet
+        if (digits.length === 0) {
+            formatted += ' ';
+        }
+        
         input.value = formatted;
         
         // Keep cursor at the end for easier typing
@@ -154,9 +182,10 @@ document.addEventListener('DOMContentLoaded', function() {
         // Extract digits only (excluding the 370 prefix)
         const digits = value.replace(/\D/g, '').substring(3);
         
+        // Phone is now required
         if (digits.length === 0) {
-            showError(input, '');
-            return true; // Phone is optional
+            showError(input, 'Phone number is required');
+            return false;
         }
         
         // Check if it's a valid Lithuanian number (9 digits after 370)
@@ -165,7 +194,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return false;
         }
         
-        // Check if mobile number starts with 6
+        // Check if mobile number starts with 6-9
         const firstDigit = digits.charAt(0);
         if (!/[6-9]/.test(firstDigit)) {
             showError(input, 'Invalid Lithuanian phone number');
@@ -177,20 +206,19 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function updateButton() {
-        const requiredFields = [nameInput, surnameInput, emailInput, addressInput, grade1Input, grade2Input, grade3Input];
+        // Now phone is also required
+        const requiredFields = [nameInput, surnameInput, emailInput, phoneInput, addressInput, grade1Input, grade2Input, grade3Input];
         let allValid = true;
         
         for (let field of requiredFields) {
-            if (!checkOneField(field)) {
-                allValid = false;
-            }
-        }
-        
-        // Check phone only if it has content beyond +370
-        const phoneDigits = phoneInput.value.replace(/\D/g, '').substring(3);
-        if (phoneDigits.length > 0) {
-            if (!checkPhoneField(phoneInput)) {
-                allValid = false;
+            if (field === phoneInput) {
+                if (!checkPhoneField(field)) {
+                    allValid = false;
+                }
+            } else {
+                if (!checkOneField(field)) {
+                    allValid = false;
+                }
             }
         }
         
@@ -237,6 +265,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         setTimeout(() => {
             contactForm.reset();
+            phoneInput.value = '+370 '; // Reset phone to show +370
             updateButton();
         }, 2000);
     });
@@ -267,7 +296,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <p><b>Name:</b> ${data.name}</p>
             <p><b>Surname:</b> ${data.surname}</p>
             <p><b>Email:</b> ${data.email}</p>
-            <p><b>Phone:</b> ${data.phone || 'Not provided'}</p>
+            <p><b>Phone:</b> ${data.phone}</p>
             <p><b>Address:</b> ${data.address}</p>
             <p><b>Grades:</b> ${data.grade1}, ${data.grade2}, ${data.grade3}</p>
             <hr>
