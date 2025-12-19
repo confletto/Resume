@@ -328,17 +328,28 @@
         </div>
 
         <div class="actions">
-          <button class="btn-game" onclick = start()>Start</button>
+          <button class="btn-game" onclick="start()">Start</button>
           <div class="stats">
             <div class="moves">Moves: 0</div>
             <div class="timer">Time: 0</div>
+            
+            <!-- Best Scores Panel -->
+            <div class="best-scores">
+              <h3>🏆 Best Scores</h3>
+              <div class="best-easy">
+                <strong>Easy:</strong> <span class="best-easy-value">No record yet</span>
+              </div>
+              <div class="best-hard">
+                <strong>Hard:</strong> <span class="best-hard-value">No record yet</span>
+              </div>
+            </div>
           </div>
         </div>
 
         <div class="grid-container"></div>
 
         <div class="actions">
-          <button class="btn-game" onclick = restart()>Restart</button>
+          <button class="btn-game" onclick="restart()">Restart</button>
         </div>
       </div>
 
@@ -445,17 +456,17 @@
 
                 <div class="form-field message-field">
                   <label for="labGrade1" class="field-label">What is your grade for the design/colors of this resume?</label>
-                  <input type="number" class="form-input" name = "labGrade1" id="labGrade1" max="10" min="1" required="">
+                  <input type="number" class="form-input" name="labGrade1" id="labGrade1" max="10" min="1" required="">
                 </div>
 
                 <div class="form-field message-field">
                   <label for="labGrade2" class="field-label">What is your grade for the structure of this resume?</label>
-                  <input type="number" class="form-input" name = "labGrade2" id="labGrade2" max="10" min="1" required="">
+                  <input type="number" class="form-input" name="labGrade2" id="labGrade2" max="10" min="1" required="">
                 </div>
 
                 <div class="form-field message-field">
                   <label for="labGrade3" class="field-label">What is your grade for the information on this resume?</label>
-                  <input type="number" class="form-input" name = "labGrade3" id="labGrade3" max="10" min="1" required="">
+                  <input type="number" class="form-input" name="labGrade3" id="labGrade3" max="10" min="1" required="">
                 </div>
 
                 <div class="my-3">
