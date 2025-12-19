@@ -17,8 +17,180 @@ const state = {
     gameWon: false
 };
 
+// Best scores object
+const bestScores = {
+    easy: null,
+    hard: null
+};
+
 // Emojis
 const emojis = ['🌈​', '​💧', '​🔥​', '​❄️', '⚡​', '​🌀​', '​🌧️​', '​​🌙​​', '​​​⭐​', '​​​🪐​', '​🌏​​​​', '​​🌊​'];
+
+// localStorage functions
+function loadBestScores() {
+    try {
+        const savedEasy = localStorage.getItem('memoryGame_best_easy');
+        const savedHard = localStorage.getItem('memoryGame_best_hard');
+        
+        if (savedEasy) {
+            bestScores.easy = JSON.parse(savedEasy);
+            console.log('Loaded Easy best score:', bestScores.easy);
+        }
+        
+        if (savedHard) {
+            bestScores.hard = JSON.parse(savedHard);
+            console.log('Loaded Hard best score:', bestScores.hard);
+        }
+        
+        updateBestScoresDisplay();
+    } catch (error) {
+        console.error('Error loading best scores:', error);
+    }
+}
+
+function saveBestScore(difficulty, moves, time) {
+    try {
+        const scoreData = { moves, time, date: new Date().toISOString() };
+        localStorage.setItem(`memoryGame_best_${difficulty}`, JSON.stringify(scoreData));
+        console.log(`Saved new best score for ${difficulty}:`, scoreData);
+    } catch (error) {
+        console.error('Error saving best score:', error);
+    }
+}
+
+function updateBestScoresDisplay() {
+    // Find or create best scores display elements
+    let easyBestDisplay = document.querySelector('.best-easy');
+    let hardBestDisplay = document.querySelector('.best-hard');
+    
+    // If elements don't exist, create them in the stats panel
+    if (!easyBestDisplay || !hardBestDisplay) {
+        const statsPanel = document.querySelector('.stats') || document.querySelector('.game-info');
+        
+        if (statsPanel) {
+            // Check if best scores container already exists
+            let bestScoresContainer = document.querySelector('.best-scores');
+            
+            if (!bestScoresContainer) {
+                bestScoresContainer = document.createElement('div');
+                bestScoresContainer.className = 'best-scores';
+                bestScoresContainer.style.cssText = `
+                    margin-top: 20px;
+                    padding: 15px;
+                    background: #f8f9fa;
+                    border-radius: 8px;
+                    border: 2px solid #e0e0e0;
+                `;
+                
+                bestScoresContainer.innerHTML = `
+                    <h3 style="margin: 0 0 10px 0; color: #2c3e50; font-size: 18px;">🏆 Best Scores</h3>
+                    <div class="best-easy" style="margin: 8px 0; padding: 8px; background: white; border-radius: 5px;">
+                        <strong>Easy:</strong> <span class="best-easy-value">No record yet</span>
+                    </div>
+                    <div class="best-hard" style="margin: 8px 0; padding: 8px; background: white; border-radius: 5px;">
+                        <strong>Hard:</strong> <span class="best-hard-value">No record yet</span>
+                    </div>
+                `;
+                
+                statsPanel.appendChild(bestScoresContainer);
+            }
+            
+            easyBestDisplay = document.querySelector('.best-easy-value');
+            hardBestDisplay = document.querySelector('.best-hard-value');
+        }
+    } else {
+        easyBestDisplay = document.querySelector('.best-easy-value');
+        hardBestDisplay = document.querySelector('.best-hard-value');
+    }
+    
+    // Update the display values
+    if (easyBestDisplay) {
+        if (bestScores.easy) {
+            easyBestDisplay.innerHTML = `${bestScores.easy.moves} moves (${bestScores.easy.time}s)`;
+            easyBestDisplay.style.color = '#27ae60';
+            easyBestDisplay.style.fontWeight = 'bold';
+        } else {
+            easyBestDisplay.textContent = 'No record yet';
+            easyBestDisplay.style.color = '#95a5a6';
+        }
+    }
+    
+    if (hardBestDisplay) {
+        if (bestScores.hard) {
+            hardBestDisplay.innerHTML = `${bestScores.hard.moves} moves (${bestScores.hard.time}s)`;
+            hardBestDisplay.style.color = '#27ae60';
+            hardBestDisplay.style.fontWeight = 'bold';
+        } else {
+            hardBestDisplay.textContent = 'No record yet';
+            hardBestDisplay.style.color = '#95a5a6';
+        }
+    }
+}
+
+function checkAndUpdateBestScore(difficulty, moves, time) {
+    const currentBest = bestScores[difficulty];
+    
+    // If no best score exists, or current moves is better (fewer)
+    if (!currentBest || moves < currentBest.moves) {
+        console.log(`🎉 NEW BEST SCORE for ${difficulty}! Previous: ${currentBest ? currentBest.moves : 'none'}, New: ${moves}`);
+        
+        bestScores[difficulty] = { moves, time };
+        saveBestScore(difficulty, moves, time);
+        updateBestScoresDisplay();
+        
+        // Show congratulations message
+        showNewRecordMessage(difficulty, moves, time);
+        return true;
+    }
+    
+    return false;
+}
+
+function showNewRecordMessage(difficulty, moves, time) {
+    const message = document.createElement('div');
+    message.className = 'new-record-popup';
+    message.innerHTML = `
+        <div style="font-size: 24px; margin-bottom: 10px;">🏆</div>
+        <div style="font-weight: bold; font-size: 18px; margin-bottom: 5px;">NEW RECORD!</div>
+        <div>${difficulty.toUpperCase()}: ${moves} moves in ${time}s</div>
+    `;
+    message.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px 40px;
+        border-radius: 15px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        z-index: 10000;
+        text-align: center;
+        animation: popIn 0.5s ease-out;
+    `;
+    
+    // Add animation keyframes if not already added
+    if (!document.querySelector('#record-animation')) {
+        const style = document.createElement('style');
+        style.id = 'record-animation';
+        style.textContent = `
+            @keyframes popIn {
+                0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+                50% { transform: translate(-50%, -50%) scale(1.1); }
+                100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
+    document.body.appendChild(message);
+    
+    setTimeout(() => {
+        message.style.transition = 'opacity 0.5s';
+        message.style.opacity = '0';
+        setTimeout(() => message.remove(), 500);
+    }, 3000);
+}
 
 // Initialize difficulty buttons
 function initDifficulty() {
@@ -142,6 +314,9 @@ function checkWinCondition() {
         
         console.log(`Congratulations! You completed the game in ${state.totalTime} seconds with ${state.totalFlips} moves!`);
         
+        // Check and update best score
+        checkAndUpdateBestScore(state.currentDifficulty, state.totalFlips, state.totalTime);
+        
         return true;
     }
     return false;
@@ -258,6 +433,9 @@ function restart() {
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Game initializing...');
     
+    // Load best scores from localStorage
+    loadBestScores();
+    
     initDifficulty();
     
     generateCards();
@@ -266,6 +444,7 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('1. Select Easy (4x3) or Hard (6x4)');
     console.log('2. See the grid change immediately');
     console.log('3. Click Start when ready');
+    console.log('4. Best scores are saved automatically!');
 });
 
 window.start = start;
