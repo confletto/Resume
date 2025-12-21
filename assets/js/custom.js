@@ -149,8 +149,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Limit to 9 digits (after +370)
-        if (digits.length > 9) {
-            digits = digits.substring(0, 9);
+        if (digits.length > 8) {
+            digits = digits.substring(0, 8);
         }
         
         // Always start with +370
@@ -188,8 +188,8 @@ document.addEventListener('DOMContentLoaded', function() {
             return false;
         }
         
-        // Check if it's a valid Lithuanian number (9 digits after 370)
-        if (digits.length < 9) {
+        // Check if it's a valid Lithuanian number (8 digits after 370)
+        if (digits.length < 8) {
             showError(input, 'Phone number is too short (need 9 digits)');
             return false;
         }
